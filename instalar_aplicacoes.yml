@@ -1,0 +1,86 @@
+---
+- hosts: localhost
+  become: yes
+  tasks:
+    - name: Atualizar pacotes apt
+      apt:
+        update_cache: yes
+        force_apt_get: yes
+
+    - name: Instalar Apache
+      apt:
+        name: apache2
+        state: present
+
+    - name: Iniciar e habilitar Apache no boot
+      systemd:
+        name: apache2
+        enabled: yes
+        state: started
+
+    - name: Instalar Git
+      apt:
+        name: git
+        state: present
+
+    - name: Instalar MySQL Server
+      apt:
+        name: mysql-server
+        state: present
+
+    - name: Garantir que o MySQL está em execução
+      systemd:
+        name: mysql
+        state: started
+        enabled: yes
+
+    - name: Definir senha do root do MySQL
+      mysql_user:
+        name: root
+        host_all: yes
+        password: "senha_segura"
+
+    - name: Remover permissões remotas do root no MySQL
+      mysql_user:
+        name: root
+        host: '%'
+        state: absent
+
+    - name: Instalar PHP e módulos necessários
+      apt:
+        name: "{{ item }}"
+        state: present
+      loop:
+        - php
+        - libapache2-mod-php
+        - php-mysql
+
+    - name: Reiniciar o Apache para carregar o PHP
+      systemd:
+        name: apache2
+        state: restarted
+
+    - name: Criar diretório da aplicação PHP
+      file:
+        path: /var/www/html/minha_aplicacao
+        state: directory
+        mode: '0755'
+
+    - name: Copiar o arquivo index.php para o diretório da aplicação
+      copy:
+        src: ./index.php
+        dest: /var/www/html/minha_aplicacao/index.php
+        mode: '0644'
+
+    - name: Definir permissões corretas no diretório da aplicação
+      file:
+        path: /var/www/html/minha_aplicacao
+        state: directory
+        owner: www-data
+        group: www-data
+        mode: '0755'
+
+    - name: Reiniciar Apache para aplicar alterações
+      systemd:
+        name: apache2
+        state: restarted
