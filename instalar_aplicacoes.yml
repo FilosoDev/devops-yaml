@@ -38,7 +38,7 @@
       mysql_user:
         name: root
         host_all: yes
-        password: "senha_segura"
+        password: "admin"
 
     - name: Remover permissões remotas do root no MySQL
       mysql_user:
