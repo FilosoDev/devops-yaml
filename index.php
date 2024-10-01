@@ -3,7 +3,7 @@
 $host = 'localhost';
 $dbname = 'test_db';
 $username = 'root';
-$password = 'senha_segura';
+$password = 'admin';
 
 // Conectar ao banco de dados MySQL
 try {
