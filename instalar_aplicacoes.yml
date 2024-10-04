@@ -12,40 +12,6 @@
         name: apache2
         state: present
 
-    - name: Iniciar e habilitar Apache no boot
-      systemd:
-        name: apache2
-        enabled: yes
-        state: started
-
-    - name: Instalar Git
-      apt:
-        name: git
-        state: present
-
-    - name: Instalar MySQL Server
-      apt:
-        name: mysql-server
-        state: present
-
-    - name: Garantir que o MySQL está em execução
-      systemd:
-        name: mysql
-        state: started
-        enabled: yes
-
-    - name: Definir senha do root do MySQL
-      mysql_user:
-        name: root
-        host_all: yes
-        password: "admin"
-
-    - name: Remover permissões remotas do root no MySQL
-      mysql_user:
-        name: root
-        host: '%'
-        state: absent
-
     - name: Instalar PHP e módulos necessários
       apt:
         name: "{{ item }}"
@@ -53,7 +19,6 @@
       loop:
         - php
         - libapache2-mod-php
-        - php-mysql
 
     - name: Reiniciar o Apache para carregar o PHP
       systemd:
@@ -72,15 +37,7 @@
         dest: /var/www/html/minha_aplicacao/index.php
         mode: '0644'
 
-    - name: Definir permissões corretas no diretório da aplicação
-      file:
-        path: /var/www/html/minha_aplicacao
-        state: directory
-        owner: www-data
-        group: www-data
-        mode: '0755'
-
-    - name: Reiniciar Apache para aplicar alterações
+    - name: Reiniciar Apache após copiar a aplicação
       systemd:
         name: apache2
         state: restarted
