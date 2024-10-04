@@ -27,14 +27,14 @@
 
     - name: Criar diretório da aplicação PHP
       file:
-        path: /var/www/html/minha_aplicacao
+        path: /var/www/html
         state: directory
         mode: '0755'
 
     - name: Copiar o arquivo index.php para o diretório da aplicação
       copy:
         src: ./index.php
-        dest: /var/www/html/minha_aplicacao/index.php
+        dest: /var/www/html/index.php
         mode: '0644'
 
     - name: Reiniciar Apache após copiar a aplicação
